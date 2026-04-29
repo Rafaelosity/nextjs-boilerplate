@@ -1,0 +1,97 @@
+// Breakpoints
+$breakpoints: (
+  'sm':  640px,
+  'md':  768px,
+  'lg':  1024px,
+  'xl':  1280px,
+  '2xl': 1536px,
+);
+
+@mixin respond-to($breakpoint) {
+  $value: map-get($breakpoints, $breakpoint);
+  @if $value != null {
+    @media (min-width: $value) {
+      @content;
+    }
+  } @else {
+    @warn 'Unknown breakpoint: #{$breakpoint}';
+  }
+}
+
+@mixin respond-below($breakpoint) {
+  $value: map-get($breakpoints, $breakpoint);
+  @if $value != null {
+    @media (max-width: calc(#{$value} - 1px)) {
+      @content;
+    }
+  }
+}
+
+// Visually hidden (accessible)
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Truncate text
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Line clamp
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Focus ring
+@mixin focus-ring {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+// Absolute center
+@mixin absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// Flex center
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Fluid type (min → max across viewport range)
+@mixin fluid-type($min-size, $max-size, $min-vw: 320px, $max-vw: 1920px) {
+  font-size: clamp(
+    #{$min-size},
+    calc(#{$min-size} + (#{strip-unit($max-size - $min-size)}) * ((100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)})),
+    #{$max-size}
+  );
+}
+
+@function strip-unit($number) {
+  @return $number / ($number * 0 + 1);
+}
+
+// Reduce motion
+@mixin reduce-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
