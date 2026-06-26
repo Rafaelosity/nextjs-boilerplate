@@ -1,4 +1,4 @@
-// Modern CSS reset — based on Andy Bell's reset + additions
+/* Modern CSS reset — based on Andy Bell's reset + additions */
 *, *::before, *::after {
   box-sizing: border-box;
 }

@@ -8,9 +8,6 @@ const nextConfig = {
     // quality per-format is handled via the loader or next/image quality prop
     // defaults: jpeg=75, webp=75, avif=50
   },
-  sassOptions: {
-    includePaths: ['./src/styles'],
-  },
 }
 
 module.exports = nextConfig

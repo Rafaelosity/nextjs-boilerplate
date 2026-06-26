@@ -17,36 +17,60 @@ npm test             # run full suite
 
 ## Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
-- **Styles**: SCSS → compiled to CSS via sass package
+- **Components**: Radix UI (headless, accessible primitives)
+- **Styles**: CSS Modules (`.module.css`) + plain CSS for globals
 - **Image optimization**: sharp (build-time) + next/image (runtime)
 
 ## Architecture
 
 - `src/app/` — App Router pages and layouts
-- `src/components/` — shared components (built per-project, no UI library)
+- `src/components/` — shared components, each with its own `.module.css`
 - `src/hooks/` — custom React hooks
 - `src/lib/` — utility functions and helpers
 - `src/types/` — shared TypeScript types
-- `src/styles/` — SCSS architecture (tokens → base → layouts → shared → pages)
+- `src/styles/` — global styles (tokens → base → layouts → shared)
 
 ## Styles structure
 
 ```
 src/styles/
-  utils/    # _tokens.scss (CSS vars), _mixins.scss (breakpoints, helpers)
-  base/     # _reset.scss, _typography.scss
-  layouts/  # _grid.scss, layout primitives
-  pages/    # per-page SCSS files, imported in the page component
-  shared/   # reusable partials (buttons, forms, etc.)
-  index.scss
+  tokens.css          # :root { CSS custom properties } — all design tokens
+  utils/
+    helpers.css       # utility classes (visually-hidden, truncate, flex-center…)
+    breakpoints.ts    # breakpoint constants for use in JS/TS
+  base/
+    reset.css
+    typography.css
+  layouts/
+    grid.css          # .container, .grid, .flex
+  shared/
+    placeholder.css   # reusable partials (add buttons, forms, etc. here)
+  pages/
+    *.module.css      # per-page styles, imported in the page component
+  index.css           # imports all global styles — imported once in layout.tsx
 ```
 
-Page-specific styles are imported directly in the component:
-```ts
-import '@/styles/pages/_home.scss'
+Component styles live next to the component:
 ```
+src/components/Button/
+  Button.tsx
+  Button.module.css
+  index.ts
+```
+
+Page-specific styles use CSS Modules:
+```ts
+import styles from '@/styles/pages/home.module.css'
+```
+
+## Components
+
+- Use Radix UI primitives for interactive elements (Dialog, DropdownMenu, Select, Tooltip…)
+- Wrap Radix components in your own component with a `.module.css` file for styling
+- Use `asChild` prop (via `@radix-ui/react-slot`) to render as a different element (e.g. Link)
+- See `src/components/Button/` as the reference pattern
 
 ## Key Decisions
 
@@ -64,6 +88,7 @@ import '@/styles/pages/_home.scss'
 
 ## Don'ts
 
-- Never hardcode values — use tokens from `src/styles/utils/_tokens.scss`
-- Don't modify generated files
+- Never hardcode values — use tokens from `src/styles/tokens.css`
 - Don't import styles globally unless they're truly global (base/shared)
+- Don't add Tailwind — styles belong in `.module.css` files
+- Don't use inline `style={{}}` props for anything that could be a CSS Module rule
